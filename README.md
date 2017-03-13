@@ -12,7 +12,7 @@ Add the `rdf4j-beans` dependency in your POM:
 <dependency>
     <groupId>com.github.kburger</groupId>
     <artifactId>rdf4j-beans</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
