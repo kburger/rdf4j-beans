@@ -75,7 +75,7 @@ public class BeanAnalyzer {
             classAnalysis.setTypeProperty(typeAnalysis);
         }
         
-        for (PropertyDescriptor property : bean.getPropertyDescriptors()) {
+        for (final PropertyDescriptor property : bean.getPropertyDescriptors()) {
             analyzeProperty(clazz, property, classAnalysis);
         }
         
@@ -140,8 +140,8 @@ public class BeanAnalyzer {
      * @param annotationClass the annotation to retrieve.
      * @return the retrieved annotation from field or method; {@link Optional#empty()} if not found.
      */
-    private <T extends Annotation> Optional<T> getPropertyAnnotation(final PropertyDescriptor property,
-            final Field field, final Class<T> annotationClass) {
+    private <T extends Annotation> Optional<T> getPropertyAnnotation(
+            final PropertyDescriptor property, final Field field, final Class<T> annotationClass) {
         Optional<T> annotation = Optional.ofNullable(field.getAnnotation(annotationClass));
         
         if (!annotation.isPresent()) {

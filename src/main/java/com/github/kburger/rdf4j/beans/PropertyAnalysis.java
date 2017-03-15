@@ -59,7 +59,7 @@ public class PropertyAnalysis<T extends Annotation> {
         return Optional.ofNullable(nested);
     }
     
-    public void setNested(ClassAnalysis nested) {
+    public void setNested(final ClassAnalysis nested) {
         this.nested = nested;
     }
 }

@@ -65,11 +65,11 @@ public class BeanMapper {
     private BeanWriter beanWriter = new BeanWriter();
     private BeanReader beanReader = new BeanReader();
     
-    public void setWriter(BeanWriter writer) {
+    public void setWriter(final BeanWriter writer) {
         this.beanWriter = writer;
     }
     
-    public void setReader(BeanReader reader) {
+    public void setReader(final BeanReader reader) {
         this.beanReader = reader;
     }
     
@@ -82,7 +82,8 @@ public class BeanMapper {
      * @param format determines the serialization format.
      * @throws BeanException if an error occurred during serialization.
      */
-    public void write(Writer writer, Object bean, String subject, RDFFormat format) {
+    public void write(final Writer writer, final Object bean, final String subject,
+            final RDFFormat format) {
         final Class<?> clazz = bean.getClass();
         final ClassAnalysis analysis = analyzer.analyze(clazz);
         beanWriter.write(writer, analysis, bean, subject, format);
@@ -97,7 +98,7 @@ public class BeanMapper {
      * @return a populated bean instance of type {@code clazz}.
      * @throws BeanException if an error occured during deserialization.
      */
-    public <T> T read(Reader reader, Class<T> clazz, RDFFormat format) {
+    public <T> T read(final Reader reader, final Class<T> clazz, final RDFFormat format) {
         final ClassAnalysis analysis = analyzer.analyze(clazz);
         return beanReader.read(reader, clazz, analysis, format);
     }

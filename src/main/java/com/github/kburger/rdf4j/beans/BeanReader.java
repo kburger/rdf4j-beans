@@ -68,7 +68,7 @@ public class BeanReader {
      * @param target conversion target type.
      * @param converter {@link PropertyConverter} instance.
      */
-    public <T> void registerConverter(Class<T> target, PropertyConverter<T> converter) {
+    public <T> void registerConverter(final Class<T> target, final PropertyConverter<T> converter) {
         converters.put(target, converter);
     }
     
@@ -90,7 +90,7 @@ public class BeanReader {
             throw new BeanException("Failed to read RDF source", e);
         }
         
-        IRI subject = FACTORY.createIRI("http://example.com/subject");
+        final IRI subject = FACTORY.createIRI("http://example.com/subject");
         
         return readInternal(model, clazz, analysis, subject);
     }
@@ -106,41 +106,44 @@ public class BeanReader {
      * @throws BeanException if an RDF property conversion failed, or if a bean property setter
      *         method could not be invoked.
      */
-    private <T> T readInternal(Model model, Class<T> clazz, ClassAnalysis analysis, IRI subject) {
-        T bean;
+    private <T> T readInternal(final Model model, final Class<T> clazz,
+            final ClassAnalysis analysis, final IRI subject) {
+        final T bean;
         try {
             bean = clazz.newInstance();
         } catch (IllegalAccessException | InstantiationException e) {
             throw new BeanException("Failed to create bean instance for class " + clazz, e);
         }
         
-        for (PropertyAnalysis<Predicate> property : analysis.getPredicates()) {
-            Predicate annotation = property.getAnnotation();
-            IRI predicate = FACTORY.createIRI(annotation.value());
+        for (final PropertyAnalysis<Predicate> property : analysis.getPredicates()) {
+            final Predicate annotation = property.getAnnotation();
+            final IRI predicate = FACTORY.createIRI(annotation.value());
             
-            Model triples = model.filter(subject, predicate, null);
+            final Model triples = model.filter(subject, predicate, null);
             
-            Method setter = property.getSetter();
+            final Method setter = property.getSetter();
             // We can safely assume the BeanAnalyzer has picked a suitable setter method which
             // follows Java bean standards. Therefore we retrieve the single parameter of the setter
             // without any error checking.
-            Parameter setterArg = setter.getParameters()[0];
+            final Parameter setterArg = setter.getParameters()[0];
             
             final Object value;
             if (triples.size() > 1) {
-                ParameterizedType genericType = (ParameterizedType)setterArg.getParameterizedType();
-                Class<?> collectionType = (Class<?>)genericType.getActualTypeArguments()[0];
+                final ParameterizedType genericType =
+                        (ParameterizedType)setterArg.getParameterizedType();
+                final Class<?> collectionType = (Class<?>)genericType.getActualTypeArguments()[0];
                 
-                Collection<Object> collection = createCollectionInstance(setterArg.getType());
+                final Collection<Object> collection = createCollectionInstance(setterArg.getType());
                 
-                for (Statement st : triples) {
-                    Object element = readProperty(model, property, collectionType, st.getObject());
+                for (final Statement st : triples) {
+                    final Object element =
+                            readProperty(model, property, collectionType,st.getObject());
                     collection.add(element);
                 }
                 
                 value = collection;
             } else {
-                Class<?> type = setterArg.getType();
+                final Class<?> type = setterArg.getType();
                 value = readProperty(model, property, type, Models.object(triples).get());
             }
             
@@ -163,11 +166,12 @@ public class BeanReader {
      * @return the deserialized triple object value.
      * @throws BeanException if the property type could not be converted into a Java type.
      */
-    private Object readProperty(Model model, PropertyAnalysis<Predicate> property, Class<?> type, Value object) {
+    private Object readProperty(final Model model, final PropertyAnalysis<Predicate> property,
+            final Class<?> type, final Value object) {
         final Object value;
         
         if (property.getNested().isPresent()) {
-            ClassAnalysis nested = property.getNested().get();
+            final ClassAnalysis nested = property.getNested().get();
             
             value = readInternal(model, type, nested, (IRI)object);
         } else {
@@ -187,7 +191,7 @@ public class BeanReader {
      * @return an empty Collection of the specified type.
      * @throws BeanException if the specified Collection type could not be created.
      */
-    private Collection<Object> createCollectionInstance(Class<?> type) {
+    private Collection<Object> createCollectionInstance(final Class<?> type) {
         if (type.isAssignableFrom(List.class)) {
             return new ArrayList<>();
         } else if (type.isAssignableFrom(Set.class)) {

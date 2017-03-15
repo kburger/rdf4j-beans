@@ -44,7 +44,7 @@ public class ClassAnalysis {
         return subject;
     }
     
-    public void setSubjectProperty(PropertyAnalysis<Subject> subject) {
+    public void setSubjectProperty(final PropertyAnalysis<Subject> subject) {
         this.subject = subject;
     }
     
@@ -52,7 +52,7 @@ public class ClassAnalysis {
         return type;
     }
     
-    public void setTypeProperty(PropertyAnalysis<Type> type) {
+    public void setTypeProperty(final PropertyAnalysis<Type> type) {
         this.type = type;
     }
     
@@ -60,7 +60,7 @@ public class ClassAnalysis {
         return predicates;
     }
     
-    public void addPredicateProperty(PropertyAnalysis<Predicate> predicate) {
+    public void addPredicateProperty(final PropertyAnalysis<Predicate> predicate) {
         predicates.add(predicate);
     }
 }
