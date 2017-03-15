@@ -41,9 +41,23 @@ BeanMapper mapper = new BeanMapper();
 mapper.write(new OutputStreamWriter(System.out), new MyBean("example"), "http://example.com/subject", RDFFormat.TURTLE);
 ```
 
+Or read from source:
+```
+@prefix ex: <http://example.com/> .
+@prefix dc: <http://purl.org/dc/terms> .
+
+ex:subject a ex:Type ;
+    dc:title "Hello world!" .
+```
+
+```java
+MyBean bean = mapper.read(new StringReader(content), MyBean.clazz, RDFFormat.TURTLE);
+assert bean.getTitle().equals("Hello world!");
+```
+
 # changelog
 0.2.0
-- ...
+- Support for bean deserialization.
 
 0.1.0
 - Initial release.
