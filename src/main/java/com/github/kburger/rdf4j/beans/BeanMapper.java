@@ -15,6 +15,7 @@
  */
 package com.github.kburger.rdf4j.beans;
 
+import java.io.Reader;
 import java.io.Writer;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -56,9 +57,14 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 public class BeanMapper {
     private final BeanAnalyzer analyzer = new BeanAnalyzer();
     private BeanWriter beanWriter = new BeanWriter();
+    private BeanReader beanReader = new BeanReader();
     
     public void setWriter(BeanWriter writer) {
         this.beanWriter = writer;
+    }
+    
+    public void setReader(BeanReader reader) {
+        this.beanReader = reader;
     }
     
     /**
@@ -73,5 +79,10 @@ public class BeanMapper {
         final Class<?> clazz = bean.getClass();
         final ClassAnalysis analysis = analyzer.analyze(clazz);
         beanWriter.write(writer, analysis, bean, subject, format);
+    }
+    
+    public <T> T read(Reader reader, Class<T> clazz, RDFFormat format) {
+        final ClassAnalysis analysis = analyzer.analyze(clazz);
+        return beanReader.read(reader, clazz, analysis, format);
     }
 }

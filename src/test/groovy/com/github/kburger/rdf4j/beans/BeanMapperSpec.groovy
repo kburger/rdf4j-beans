@@ -48,6 +48,27 @@ class BeanMapperSpec extends Specification {
                     """.stripIndent()
         }
     }
+    
+    def "check for bean reader invocation"() {
+        setup:
+        def beanReader = Spy(BeanReader)
+        beanMapper.reader = beanReader
+        
+        def source = """\
+                @prefix ex: <http://example.com/> .
+                ex:subject a ex:Type ;
+                    ex:predicate <http://example.com/value/1> .
+                """
+        
+        when:
+        def bean = beanMapper.read(new StringReader(source), TestBean, RDFFormat.TURTLE)
+        
+        then:
+        1 * beanReader.read(_, TestBean, _, RDFFormat.TURTLE)
+        with (bean) {
+            value == URI.create("http://example.com/value/1")
+        }
+    }
 }
 
 @Type(EXAMPLE_TYPE)
@@ -55,4 +76,5 @@ class TestBean {
     @Predicate(EXAMPLE_PREDICATE) private URI value
     
     public URI getValue() { value }
+    public void setValue(URI value) { this.value = value }
 }
