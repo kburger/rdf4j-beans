@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.github.kburger.rdf4j.beans.annotation.Predicate;
 import com.github.kburger.rdf4j.beans.annotation.Subject;
 import com.github.kburger.rdf4j.beans.annotation.Type;
+import com.github.kburger.rdf4j.beans.exception.BeanException;
 
 /**
  * Serializes a java bean based on the rdf4j-beans annotations.
@@ -119,7 +120,7 @@ public class BeanWriter {
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 // throw stuff if strict? ignore if lenient?
                 logger.warn("Could not invoke subject getter on {}: {}", nested, e);
-                throw new IllegalStateException(e);
+                throw new BeanException("Failed to invoke bean property getter method", e);
             }
             
             // check for relative url and create the absolute url if needed

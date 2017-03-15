@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.rio.RDFFormat
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Subject
 import com.github.kburger.rdf4j.beans.annotation.Type
+import com.github.kburger.rdf4j.beans.exception.BeanException
 
 import spock.lang.Ignore
 import spock.lang.Shared
@@ -188,7 +189,7 @@ class BeanWriterSpec extends Specification {
         
         then:
         nested.getSubject() >> { throw new RuntimeException() }
-        thrown(IllegalStateException)
+        thrown BeanException
     }
 }
 
