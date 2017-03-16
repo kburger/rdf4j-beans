@@ -77,12 +77,13 @@ public class BeanReader {
      * @param reader {@link Reader} used to read the RDF content.
      * @param clazz target bean class.
      * @param analysis class analysis for the target {@code clazz}.
+     * @param subject RDF triple subject of the bean in the RDF content.
      * @param format RDF format of the {@code reader} content.
      * @return a populated bean instance of type {@code clazz}.
      * @throws BeanException if anything goes wrong during reading.
      */
     public <T> T read(final Reader reader, final Class<T> clazz, final ClassAnalysis analysis,
-            final RDFFormat format) {
+            final String subject, final RDFFormat format) {
         final Model model;
         try {
             model = Rio.parse(reader, "", format);
@@ -90,9 +91,7 @@ public class BeanReader {
             throw new BeanException("Failed to read RDF source", e);
         }
         
-        final IRI subject = FACTORY.createIRI("http://example.com/subject");
-        
-        return readInternal(model, clazz, analysis, subject);
+        return readInternal(model, clazz, analysis, FACTORY.createIRI(subject));
     }
     
     /**

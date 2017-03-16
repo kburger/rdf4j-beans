@@ -94,12 +94,14 @@ public class BeanMapper {
      * format}.
      * @param reader {@link Reader} instance that provides the RDF content.
      * @param clazz target bean class.
+     * @param subject bean subject in the RDF content.
      * @param format RDF content format.
      * @return a populated bean instance of type {@code clazz}.
      * @throws BeanException if an error occured during deserialization.
      */
-    public <T> T read(final Reader reader, final Class<T> clazz, final RDFFormat format) {
+    public <T> T read(final Reader reader, final Class<T> clazz, final String subject,
+            final RDFFormat format) {
         final ClassAnalysis analysis = analyzer.analyze(clazz);
-        return beanReader.read(reader, clazz, analysis, format);
+        return beanReader.read(reader, clazz, analysis, subject, format);
     }
 }

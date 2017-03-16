@@ -32,7 +32,7 @@ class BeanMapperSpec extends Specification {
         def beanWriter = Spy(BeanWriter)
         beanMapper.writer = beanWriter
         def writer = new StringWriter()
-        def bean = new TestBean()
+        def bean = new UriValueBean()
         bean.value = URI.create "http://example.com/value/1"
         
         when:
@@ -43,8 +43,8 @@ class BeanMapperSpec extends Specification {
         
         with (writer.toString()) {
             contains """\
-                    <http://example.com> a <http://example.com/Type> ;
-                    \t<http://example.com/predicate> <http://example.com/value/1> .
+                    <http://example.com/subject> a <http://example.com/Type> ;
+                    \t<http://example.com/value> <http://example.com/value/1> .
                     """.stripIndent()
         }
     }
@@ -57,14 +57,14 @@ class BeanMapperSpec extends Specification {
         def source = """\
                 @prefix ex: <http://example.com/> .
                 ex:subject a ex:Type ;
-                    ex:predicate <http://example.com/value/1> .
+                    ex:value <http://example.com/value/1> .
                 """
         
         when:
-        def bean = beanMapper.read(new StringReader(source), TestBean, RDFFormat.TURTLE)
+        def bean = beanMapper.read(new StringReader(source), UriValueBean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
-        1 * beanReader.read(_, TestBean, _, RDFFormat.TURTLE)
+        1 * beanReader.read(_, UriValueBean, _, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         with (bean) {
             value == URI.create("http://example.com/value/1")
         }
@@ -72,7 +72,7 @@ class BeanMapperSpec extends Specification {
     
     def "check for roundtrip consistency"() {
         setup:
-        def bean = new RoundtripBean()
+        def bean = new LiteralValueBean()
         bean.value = "hello world"
         def writer = new StringWriter()
         
@@ -88,26 +88,10 @@ class BeanMapperSpec extends Specification {
         }
         
         when:
-        def bean2 = beanMapper.read(new StringReader(writer.toString()), RoundtripBean, RDFFormat.TURTLE)
+        def bean2 = beanMapper.read(new StringReader(writer.toString()), LiteralValueBean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         then:
         with (bean2) {
             value == "hello world"
         }
     }
-}
-
-@Type(EXAMPLE_TYPE)
-class TestBean {
-    @Predicate(EXAMPLE_PREDICATE) private URI value
-    
-    public URI getValue() { value }
-    public void setValue(URI value) { this.value = value }
-}
-
-@Type(EXAMPLE_TYPE)
-class RoundtripBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
-    
-    public String getValue() { value }
-    public void setValue(String value) { this.value = value }
 }

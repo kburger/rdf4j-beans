@@ -55,7 +55,7 @@ class BeanReaderSpec extends Specification {
         def analysis = analyzer.analyze(Object)
                 
         when:
-        beanReader.read(new StringReader(source), Object, analysis, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(source), Object, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         thrown RuntimeException
@@ -66,7 +66,7 @@ class BeanReaderSpec extends Specification {
         def analysis = analyzer.analyze(Object)
         
         when:
-        beanReader.read(new StringReader(""), List, analysis, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(""), List, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         thrown RuntimeException
@@ -74,15 +74,10 @@ class BeanReaderSpec extends Specification {
     
     def "test for exception handling of setter invocation"() {
         setup:
-        def source = """\
-                @prefix ex: <http://example.com/> .
-                ex:subject a ex:Type ;
-                    ex:value "test" .
-                """
         def analysis = analyzer.analyze(SetterExceptionBean)
         
         when:
-        beanReader.read(new StringReader(source), SetterExceptionBean, analysis, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(EXAMPLE_RDF_CONTENT), SetterExceptionBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         thrown BeanException
@@ -90,15 +85,10 @@ class BeanReaderSpec extends Specification {
     
     def "test for handling of unknown bean property types"() {
         setup:
-        def source = """\
-                @prefix ex: <http://example.com/> .
-                ex:subject a ex:Type ;
-                    ex:value "test" .
-                """
         def analysis = analyzer.analyze(UnknownTypeBean)
         
         when:
-        beanReader.read(new StringReader(source), UnknownTypeBean, analysis, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(EXAMPLE_RDF_CONTENT), UnknownTypeBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         thrown RuntimeException
@@ -106,75 +96,53 @@ class BeanReaderSpec extends Specification {
     
     def "test for handling of unknown bean property collection types"() {
         setup:
-        def source = """\
-                @prefix ex: <http://example.com/> .
-                ex:subject a ex:Type ;
-                    ex:value "a", "b", "c" .
-                """
         def analysis = analyzer.analyze(UnknownCollectionTypeBean)
         
         when:
-        beanReader.read(new StringReader(source), UnknownCollectionTypeBean, analysis, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(EXAMPLE_LIST_RDF_CONTENT), UnknownCollectionTypeBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         thrown BeanException
     }
     
-    def "test for deserialization of different collection types"() {
+    def "test for deserialization of a string literal bean property"() {
         setup:
-        def source = """\
-                @prefix ex: <http://example.com/> .
-                ex:subject a ex:Type ;
-                    ex:value "a", "b", "c" .
-                """
+        def analysis = analyzer.analyze(LiteralValueBean)
         
         when:
-        def bean1 = beanReader.read(new StringReader(source), ListCollectionTypeBean, analyzer.analyze(ListCollectionTypeBean), RDFFormat.TURTLE)
+        def bean = beanReader.read(new StringReader(EXAMPLE_RDF_CONTENT), LiteralValueBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        with (bean) {
+            value == "test"
+        }
+    }
+    
+    def "test for deserialization of a list of string literal bean properties"() {
+        def analysis = analyzer.analyze(StringListExampleBean)
+        
+        when:
+        def bean = beanReader.read(new StringReader(EXAMPLE_LIST_RDF_CONTENT), StringListExampleBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        with (bean) {
+            value == ["a", "b", "c"]
+        }
+    }
+    
+    def "test for deserialization of different collection types"() {
+        when:
+        def bean1 = beanReader.read(new StringReader(EXAMPLE_LIST_RDF_CONTENT), ListCollectionTypeBean, analyzer.analyze(ListCollectionTypeBean), EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         then:
         with (bean1) {
             value == ["a", "b", "c"]
         }
         
         when:
-        def bean2 = beanReader.read(new StringReader(source), SetCollectionTypeBean, analyzer.analyze(SetCollectionTypeBean), RDFFormat.TURTLE)
+        def bean2 = beanReader.read(new StringReader(EXAMPLE_LIST_RDF_CONTENT), SetCollectionTypeBean, analyzer.analyze(SetCollectionTypeBean), EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         then:
         with (bean2) {
             value == ["a", "b", "c"] as Set
-        }
-    }
-    
-    def "test for deserialization of a string literal bean property"() {
-        setup:
-        def source = """\
-                @prefix ex: <http://example.com/> .
-                ex:subject a ex:Type ;
-                    ex:value "hello world!" .
-                """
-        def analysis = analyzer.analyze(StringExampleBean)
-        
-        when:
-        def bean = beanReader.read(new StringReader(source), StringExampleBean, analysis, RDFFormat.TURTLE)
-        
-        then:
-        with (bean) {
-            value == "hello world!"
-        }
-    }
-    
-    def "test for deserialization of a list of string literal bean properties"() {
-        def source = """\
-                @prefix ex: <http://example.com/> .
-                ex:subject a ex:Type ;
-                    ex:value "a", "b", "c" .
-                """
-        def analysis = analyzer.analyze(StringListExampleBean)
-        
-        when:
-        def bean = beanReader.read(new StringReader(source), StringListExampleBean, analysis, RDFFormat.TURTLE)
-        
-        then:
-        with (bean) {
-            value == ["a", "b", "c"]
         }
     }
     
@@ -189,7 +157,7 @@ class BeanReaderSpec extends Specification {
         def analysis = analyzer.analyze(ZonedDateTimeExampleBean)
         
         when:
-        def bean = beanReader.read(new StringReader(source), ZonedDateTimeExampleBean, analysis, RDFFormat.TURTLE)
+        def bean = beanReader.read(new StringReader(source), ZonedDateTimeExampleBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         with (bean) {
@@ -204,10 +172,10 @@ class BeanReaderSpec extends Specification {
                 ex:subject a ex:Type ;
                     ex:value ex:foo .
                 """
-        def analysis = analyzer.analyze(UriExampleBean)
+        def analysis = analyzer.analyze(UriValueBean)
         
         when:
-        def bean = beanReader.read(new StringReader(source), UriExampleBean, analysis, RDFFormat.TURTLE)
+        def bean = beanReader.read(new StringReader(source), UriValueBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         with (bean) {
@@ -224,7 +192,7 @@ class BeanReaderSpec extends Specification {
         def analysis = analyzer.analyze(UriListExampleBean)
         
         when:
-        def bean = beanReader.read(new StringReader(source), UriListExampleBean, analysis, RDFFormat.TURTLE)
+        def bean = beanReader.read(new StringReader(source), UriListExampleBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         with (bean) {
@@ -245,7 +213,7 @@ class BeanReaderSpec extends Specification {
         def analysis = analyzer.analyze(ParentExampleBean)
         
         when:
-        def bean = beanReader.read(new StringReader(source), ParentExampleBean, analysis, RDFFormat.TURTLE)
+        def bean = beanReader.read(new StringReader(source), ParentExampleBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         with (bean.nested) {
@@ -296,15 +264,6 @@ class SetCollectionTypeBean {
 }
 
 @Type(EXAMPLE_TYPE)
-class StringExampleBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true)
-    private String value
-    
-    public String getValue() { value }
-    public void setValue(String value) { this.value = value }
-}
-
-@Type(EXAMPLE_TYPE)
 class StringListExampleBean {
     @Predicate(value = VALUE_PREDICATE, isLiteral = true)
     private List<String> value
@@ -320,15 +279,6 @@ class ZonedDateTimeExampleBean {
     
     public ZonedDateTime getValue() { value }
     public void setValue(ZonedDateTime value) { this.value = value }
-}
-
-@Type(EXAMPLE_TYPE)
-class UriExampleBean {
-    @Predicate(VALUE_PREDICATE)
-    private URI value
-    
-    public URI getValue() { value }
-    public void setValue(URI value) { this.value = value }
 }
 
 @Type(EXAMPLE_TYPE)
