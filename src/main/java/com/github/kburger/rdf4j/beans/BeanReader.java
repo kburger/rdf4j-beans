@@ -138,7 +138,7 @@ public class BeanReader {
                 
                 for (final Statement st : triples) {
                     final Object element =
-                            readProperty(model, property, collectionType,st.getObject());
+                            readProperty(model, property, collectionType, st.getObject());
                     collection.add(element);
                 }
                 

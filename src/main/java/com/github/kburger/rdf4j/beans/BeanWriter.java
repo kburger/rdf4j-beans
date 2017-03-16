@@ -51,7 +51,7 @@ public class BeanWriter {
      * @param format one of the {@link RDFFormat} types.
      */
     public void write(final Writer writer, final ClassAnalysis analysis, final Object bean,
-            final String subject, RDFFormat format) {
+            final String subject, final RDFFormat format) {
         final Model model = new LinkedHashModel();
         
         writeInternal(model, analysis, bean, FACTORY.createIRI(subject));

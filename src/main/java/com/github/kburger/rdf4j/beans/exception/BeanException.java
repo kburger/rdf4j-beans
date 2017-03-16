@@ -20,11 +20,11 @@ package com.github.kburger.rdf4j.beans.exception;
  * recover.
  */
 public class BeanException extends RuntimeException {
-    public BeanException(String message) {
+    public BeanException(final String message) {
         super(message);
     }
     
-    public BeanException(String message, Throwable cause) {
+    public BeanException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
