@@ -51,7 +51,7 @@ ex:subject a ex:Type ;
 ```
 
 ```java
-MyBean bean = mapper.read(new StringReader(content), MyBean.clazz, RDFFormat.TURTLE);
+MyBean bean = mapper.read(new StringReader(content), MyBean.class, "http://example.com/subject", RDFFormat.TURTLE);
 assert bean.getTitle().equals("Hello world!");
 ```
 
