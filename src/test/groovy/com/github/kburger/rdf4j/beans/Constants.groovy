@@ -41,18 +41,10 @@ class Constants {
 
 @Type(Constants.EXAMPLE_TYPE)
 public class LiteralValueBean {
-    @Predicate(value = Constants.VALUE_PREDICATE, isLiteral = true)
-    private String value
-    
-    public String getValue() { value }
-    public void setValue(String value) { this.value = value }
+    @Predicate(value = Constants.VALUE_PREDICATE, isLiteral = true) String value
 }
 
 @Type(Constants.EXAMPLE_TYPE)
 public class UriValueBean {
-    @Predicate(Constants.VALUE_PREDICATE)
-    private URI value
-    
-    public URI getValue() { value }
-    public void setValue(URI value) { this.value = value }
+    @Predicate(Constants.VALUE_PREDICATE) URI value
 }

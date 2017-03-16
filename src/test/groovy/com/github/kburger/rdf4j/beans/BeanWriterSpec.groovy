@@ -195,40 +195,27 @@ class BeanWriterSpec extends Specification {
 
 @Type(EXAMPLE_TYPE)
 class TestPropertyListBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private List<String> values
-    
-    public List<String> getValues() { values }
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) List<String> values
 }
 
 @Type(EXAMPLE_TYPE)
 class ParentTestBean {
-    @Predicate(NESTED_PREDICATE) private NestedTestBean nestedBean
-    
-    public NestedTestBean getNestedBean() { nestedBean }
+    @Predicate(NESTED_PREDICATE) NestedTestBean nestedBean
 }
 
 @Type(EXAMPLE_SUBTYPE)
 class NestedTestBean {
-    @Subject private URI subject
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
-    
-    public URI getSubject() { subject }
-    
-    public String getValue() { value }
+    @Subject URI subject
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) String value
 }
 
 @Type(EXAMPLE_TYPE)
 class RelativeSubjectParentBean {
-    @Predicate(NESTED_PREDICATE) private RelativeSubjectNestedBean nestedBean
-    
-    public RelativeSubjectNestedBean getNestedBean() { nestedBean }
+    @Predicate(NESTED_PREDICATE) RelativeSubjectNestedBean nestedBean
 }
 
 @Type(EXAMPLE_SUBTYPE)
 class RelativeSubjectNestedBean {
-    @Subject(relative = true) private String subject
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
-    
-    public String getSubject() { subject }
-    public String getValue() { value }
+    @Subject(relative = true) String subject
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) String value
 }

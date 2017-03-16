@@ -27,6 +27,7 @@ import com.github.kburger.rdf4j.beans.annotation.Subject
 import com.github.kburger.rdf4j.beans.annotation.Type
 import com.github.kburger.rdf4j.beans.exception.BeanException
 
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -100,6 +101,22 @@ class BeanReaderSpec extends Specification {
         
         when:
         beanReader.read(new StringReader(EXAMPLE_LIST_RDF_CONTENT), UnknownCollectionTypeBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        thrown BeanException
+    }
+    
+    @Ignore
+    def "test for handling incorrect rdf content"() {
+        setup:
+        def source = """\
+                @prefix ex: <http://example.com/> .
+                <http://wrong.example.com> a ex:Type .
+                """
+        def analysis = analyzer.analyze(LiteralValueBean)
+        
+        when:
+        beanReader.read(new StringReader(source), LiteralValueBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
         thrown BeanException
@@ -243,26 +260,19 @@ class BeanReaderSpec extends Specification {
 
 @Type(EXAMPLE_TYPE)
 class SetterExceptionBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) String value
     
-    public String getValue() { value }
     public void setValue(String value) { throw new IllegalStateException() }
 }
 
 @Type(EXAMPLE_TYPE)
 class UnknownTypeBean {
-    @Predicate(value = VALUE_PREDICATE) private Object value
-    
-    public Object getValue() { value }
-    public void setValue(Object value) { this.value = value }
+    @Predicate(value = VALUE_PREDICATE) Object value
 }
 
 @Type(EXAMPLE_TYPE)
 class UnknownCollectionTypeBean {
-    @Predicate(VALUE_PREDICATE) private Queue<String> value
-    
-    public Queue<String> getValue() { value }
-    public void setValue(Queue<String> value) { this.value = value }
+    @Predicate(VALUE_PREDICATE) Queue<String> value
 }
 
 class AbsentPropertiesBean {
@@ -272,63 +282,36 @@ class AbsentPropertiesBean {
 
 @Type(EXAMPLE_TYPE)
 class ListCollectionTypeBean {
-    @Predicate(VALUE_PREDICATE) private List<String> value
-    
-    public List<String> getValue() { value }
-    public void setValue(List<String> value) { this.value = value }
+    @Predicate(VALUE_PREDICATE) List<String> value
 }
 
 @Type(EXAMPLE_TYPE)
 class SetCollectionTypeBean {
-    @Predicate(VALUE_PREDICATE) private Set<String> value
-    
-    public Set<String> getValue() { value }
-    public void setValue(Set<String> value) { this.value = value }
+    @Predicate(VALUE_PREDICATE) Set<String> value
 }
 
 @Type(EXAMPLE_TYPE)
 class StringListExampleBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true)
-    private List<String> value
-    
-    public List<String> getValue() { value }
-    public void setValue(List<String> value) { this.value = value }
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) List<String> value
 }
 
 @Type(EXAMPLE_TYPE)
 class ZonedDateTimeExampleBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true, datatype = "http://www.w3.org/2001/XMLSchema#dateTime")
-    private ZonedDateTime value;
-    
-    public ZonedDateTime getValue() { value }
-    public void setValue(ZonedDateTime value) { this.value = value }
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true, datatype = "http://www.w3.org/2001/XMLSchema#dateTime") ZonedDateTime value;
 }
 
 @Type(EXAMPLE_TYPE)
 class UriListExampleBean {
-    @Predicate(VALUE_PREDICATE)
-    private List<URI> value
-    
-    public List<URI> getValue() { value }
-    public void setValue(List<URI> value) { this.value = value }
+    @Predicate(VALUE_PREDICATE) List<URI> value
 }
 
 @Type(EXAMPLE_TYPE)
 class ParentExampleBean {
-    @Predicate(NESTED_PREDICATE)
-    private NestedExampleBean nested
-    
-    public NestedExampleBean getNested() { nested }
-    public void setNested(NestedExampleBean nested) { this.nested = nested }
+    @Predicate(NESTED_PREDICATE) NestedExampleBean nested
 }
 
 @Type(EXAMPLE_SUBTYPE)
 class NestedExampleBean {
-    @Subject(relative = true) private String subject
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
-    
-    public String getSubject() { subject }
-    
-    public String getValue() { value }
-    public void setValue(String value) { this.value = value }
+    @Subject(relative = true) String subject
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) String value
 }
