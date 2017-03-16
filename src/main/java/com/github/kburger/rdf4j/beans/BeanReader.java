@@ -127,7 +127,9 @@ public class BeanReader {
             final Parameter setterArg = setter.getParameters()[0];
             
             final Object value;
-            if (triples.size() > 1) {
+            if (triples.isEmpty()) {
+                continue;
+            } else if (triples.size() > 1) {
                 final ParameterizedType genericType =
                         (ParameterizedType)setterArg.getParameterizedType();
                 final Class<?> collectionType = (Class<?>)genericType.getActualTypeArguments()[0];

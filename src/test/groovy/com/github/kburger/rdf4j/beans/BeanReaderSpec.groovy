@@ -105,6 +105,24 @@ class BeanReaderSpec extends Specification {
         thrown BeanException
     }
     
+    def "test for absent properties"() {
+        setup:
+        def source = """\
+                @prefix ex: <http://example.com/> .
+                ex:subject ex:mandatory ex:foo .
+                """
+        def analysis = analyzer.analyze(AbsentPropertiesBean)
+        
+        when:
+        def bean = beanReader.read(new StringReader(source), AbsentPropertiesBean, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        with (bean) {
+            mandatory == URI.create("http://example.com/foo")
+            optional == null
+        }
+    }
+    
     def "test for deserialization of a string literal bean property"() {
         setup:
         def analysis = analyzer.analyze(LiteralValueBean)
@@ -245,6 +263,11 @@ class UnknownCollectionTypeBean {
     
     public Queue<String> getValue() { value }
     public void setValue(Queue<String> value) { this.value = value }
+}
+
+class AbsentPropertiesBean {
+    @Predicate("http://example.com/mandatory") URI mandatory
+    @Predicate("http://example.com/optional") URI optional
 }
 
 @Type(EXAMPLE_TYPE)
