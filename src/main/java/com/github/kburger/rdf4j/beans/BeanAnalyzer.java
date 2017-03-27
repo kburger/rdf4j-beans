@@ -62,8 +62,10 @@ public class BeanAnalyzer {
         
         final BeanInfo bean;
         try {
+            // FIXME On 1.8.0_45 passing Object.class to Introspector.getBeanInfo results in a
+            // nullpointer exception. 
             bean = Introspector.getBeanInfo(clazz);
-        } catch (IntrospectionException e) {
+        } catch (IntrospectionException | NullPointerException e) {
             throw new BeanException("Failed to get bean info through introspection", e);
         }
         

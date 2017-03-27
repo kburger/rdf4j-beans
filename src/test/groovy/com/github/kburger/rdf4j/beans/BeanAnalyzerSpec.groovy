@@ -26,6 +26,14 @@ import spock.lang.Specification
 class BeanAnalyzerSpec extends Specification {
     def beanAnalyzer = new BeanAnalyzer()
     
+    def "check for exception handling of invalid classes"() {
+        when:
+        beanAnalyzer.analyze(Object)
+        
+        then:
+        thrown BeanException
+    }
+    
     def "cached classes should prevent re-analysis"() {
         when:
         beanAnalyzer.analyze(PropertyTestClass)
