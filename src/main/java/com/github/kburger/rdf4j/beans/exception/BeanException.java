@@ -13,7 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.kburger.rdf4j.beans.exception;
+
 /**
- * Provides RDF metadata annotations for java beans.
+ * Thrown when a bean related operation encounters an unexpected situation form which it cannot
+ * recover.
  */
-package com.github.kburger.rdf4j.beans.annotation;
+public class BeanException extends RuntimeException {
+    public BeanException(final String message) {
+        super(message);
+    }
+    
+    public BeanException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+}

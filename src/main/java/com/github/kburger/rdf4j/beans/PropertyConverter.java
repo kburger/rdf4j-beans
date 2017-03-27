@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.kburger.rdf4j.beans;
+
+import org.eclipse.rdf4j.model.Value;
+
 /**
- * Provides RDF metadata annotations for java beans.
+ * Converts an RDF triple object into the target type.
+ * @param <T> result type of the conversion.
  */
-package com.github.kburger.rdf4j.beans.annotation;
+@FunctionalInterface
+public interface PropertyConverter<T> {
+    /**
+     * Converts {@code value} into the equivalent instance of type {@code T}.
+     * @param value RDF triple object.
+     * @return the converted value for the triple object.
+     */
+    T convert(Value value);
+}

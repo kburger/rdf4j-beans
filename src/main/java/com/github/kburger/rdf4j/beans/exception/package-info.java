@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Provides RDF metadata annotations for java beans.
+ * Bean specific exception classes.
  */
-package com.github.kburger.rdf4j.beans.annotation;
+package com.github.kburger.rdf4j.beans.exception;

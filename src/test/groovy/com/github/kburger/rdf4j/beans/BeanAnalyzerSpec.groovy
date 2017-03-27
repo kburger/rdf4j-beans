@@ -121,9 +121,7 @@ class BeanAnalyzerSpec extends Specification {
 }
 
 class PropertyTestClass {
-    @Predicate(EXAMPLE_PREDICATE) private String test
-    
-    public String getTest() { test }
+    @Predicate(EXAMPLE_PREDICATE) String test
 }
 
 class MethodTestClass {
@@ -135,7 +133,6 @@ class MethodTestClass {
 
 class PropertyAndMethodTestClass {
     @Predicate(EXAMPLE_PREDICATE) private String test
-    
     private String test2
     
     public String getTest() { test }
@@ -149,26 +146,20 @@ class ClassTypeTestClass {
 }
 
 class PropertyTypeTestClass {
-    @Type("") private URI type
-    
-    public URI getType() { type }
+    @Type("") URI type
 }
 
 class MethodTypeTestClass {
-    private URI type
+    URI type
     
     @Type("")
     public URI getType() { type }
 }
 
 class NestedClass {
-    @Predicate("nested-foo") private String foo
-    
-    public String getFoo() { foo }
+    @Predicate("nested-foo") String foo
 }
 
 class WithNestedTestClass {
-    @Predicate("parent-foo") private NestedClass parentfoo;
-    
-    public NestedClass getParentfoo() { parentfoo }
+    @Predicate("parent-foo") NestedClass parentfoo
 }

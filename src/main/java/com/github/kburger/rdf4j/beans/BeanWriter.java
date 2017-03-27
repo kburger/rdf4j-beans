@@ -17,6 +17,8 @@ package com.github.kburger.rdf4j.beans;
 
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.github.kburger.rdf4j.beans.annotation.Predicate;
 import com.github.kburger.rdf4j.beans.annotation.Subject;
 import com.github.kburger.rdf4j.beans.annotation.Type;
+import com.github.kburger.rdf4j.beans.exception.BeanException;
 
 /**
  * Serializes a java bean based on the rdf4j-beans annotations.
@@ -50,7 +53,7 @@ public class BeanWriter {
      * @param format one of the {@link RDFFormat} types.
      */
     public void write(final Writer writer, final ClassAnalysis analysis, final Object bean,
-            final String subject, RDFFormat format) {
+            final String subject, final RDFFormat format) {
         final Model model = new LinkedHashModel();
         
         writeInternal(model, analysis, bean, FACTORY.createIRI(subject));
@@ -75,23 +78,30 @@ public class BeanWriter {
         for (final PropertyAnalysis<Predicate> property : analysis.getPredicates()) {
             final Predicate annotation = property.getAnnotation();
             
-            final Object content;
+            final Optional<Object> content;
             try {
-                content = property.getGetter().invoke(bean);
+                final Method getter = property.getGetter();
+                content = Optional.ofNullable(getter.invoke(bean));
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 logger.warn("Could not invoke getter on {}: {}", bean, e.getMessage());
                 // TODO add flag for strict writing
                 continue;
             }
             
+            if (!content.isPresent()) {
+                logger.debug("Getter {} returned null on bean {}, skip writing",
+                        property.getGetter(), bean);
+                continue;
+            }
+            
             final IRI predicate = FACTORY.createIRI(annotation.value());
             
-            if (content instanceof Iterable) {
-                for (final Object element : (Iterable<?>)content) {
+            if (content.get() instanceof Iterable) {
+                for (final Object element : (Iterable<?>)content.get()) {
                     writeContent(property, element, model, subject, predicate);
                 }
             } else {
-                writeContent(property, content, model, subject, predicate);
+                writeContent(property, content.get(), model, subject, predicate);
             }
         }
     }
@@ -119,7 +129,7 @@ public class BeanWriter {
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 // throw stuff if strict? ignore if lenient?
                 logger.warn("Could not invoke subject getter on {}: {}", nested, e);
-                throw new IllegalStateException(e);
+                throw new BeanException("Failed to invoke bean property getter method", e);
             }
             
             // check for relative url and create the absolute url if needed

@@ -32,9 +32,9 @@ import java.util.Optional;
  * @param <T> one of the 3 rdf4j-beans annotation types.
  */
 public class PropertyAnalysis<T extends Annotation> {
-    final private T annotation;
-    final private Method getter;
-    final private Method setter;
+    private final T annotation;
+    private final Method getter;
+    private final Method setter;
     private ClassAnalysis nested;
     
     public PropertyAnalysis(final T annotation, final Method getter, final Method setter) {
@@ -59,7 +59,7 @@ public class PropertyAnalysis<T extends Annotation> {
         return Optional.ofNullable(nested);
     }
     
-    public void setNested(ClassAnalysis nested) {
+    public void setNested(final ClassAnalysis nested) {
         this.nested = nested;
     }
 }

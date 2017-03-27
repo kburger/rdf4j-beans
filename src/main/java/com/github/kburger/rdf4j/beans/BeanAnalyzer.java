@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.github.kburger.rdf4j.beans.annotation.Predicate;
 import com.github.kburger.rdf4j.beans.annotation.Subject;
 import com.github.kburger.rdf4j.beans.annotation.Type;
+import com.github.kburger.rdf4j.beans.exception.BeanException;
 
 /**
  * Analyzes Java beans that have been annotated with the rdf4j-beans annotations. The analysis
@@ -63,7 +64,7 @@ public class BeanAnalyzer {
         try {
             bean = Introspector.getBeanInfo(clazz);
         } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
+            throw new BeanException("Failed to get bean info through introspection", e);
         }
         
         final ClassAnalysis classAnalysis = new ClassAnalysis();
@@ -74,7 +75,7 @@ public class BeanAnalyzer {
             classAnalysis.setTypeProperty(typeAnalysis);
         }
         
-        for (PropertyDescriptor property : bean.getPropertyDescriptors()) {
+        for (final PropertyDescriptor property : bean.getPropertyDescriptors()) {
             analyzeProperty(clazz, property, classAnalysis);
         }
         
@@ -139,8 +140,8 @@ public class BeanAnalyzer {
      * @param annotationClass the annotation to retrieve.
      * @return the retrieved annotation from field or method; {@link Optional#empty()} if not found.
      */
-    private <T extends Annotation> Optional<T> getPropertyAnnotation(final PropertyDescriptor property,
-            final Field field, final Class<T> annotationClass) {
+    private <T extends Annotation> Optional<T> getPropertyAnnotation(
+            final PropertyDescriptor property, final Field field, final Class<T> annotationClass) {
         Optional<T> annotation = Optional.ofNullable(field.getAnnotation(annotationClass));
         
         if (!annotation.isPresent()) {

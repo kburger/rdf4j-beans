@@ -21,11 +21,12 @@
 
     <groupId>com.github.kburger</groupId>
     <artifactId>rdf4j-beans</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
 
     <name>RDF4J beans library</name>
     <description>RDF4J library for Java bean serialization.</description>
+    <url>https://github.com/kburger/rdf4j-beans/</url>
     <inceptionYear>2017</inceptionYear>
     <licenses>
         <license>
@@ -65,15 +66,14 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
 
         <!-- compile -->
-        <slf4j.version>1.7.24</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
         <rdf4j.version>2.2</rdf4j.version>
 
         <!-- test -->
         <spock.version>1.1-groovy-2.4-rc-2</spock.version>
-        <groovy.version>2.4.8</groovy.version>
+        <groovy.version>2.4.10</groovy.version>
         <cglib.version>3.2.5</cglib.version>
         <gmavenplus.version>1.5</gmavenplus.version>
         <surefire.version>2.19.1</surefire.version>
@@ -183,13 +183,50 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${nexus-staging-maven-plugin.version}</version>
+                        <version>1.6.8</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

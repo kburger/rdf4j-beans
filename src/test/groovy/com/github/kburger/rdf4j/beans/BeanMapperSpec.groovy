@@ -32,7 +32,7 @@ class BeanMapperSpec extends Specification {
         def beanWriter = Spy(BeanWriter)
         beanMapper.writer = beanWriter
         def writer = new StringWriter()
-        def bean = new TestBean()
+        def bean = new UriValueBean()
         bean.value = URI.create "http://example.com/value/1"
         
         when:
@@ -43,16 +43,55 @@ class BeanMapperSpec extends Specification {
         
         with (writer.toString()) {
             contains """\
-                    <http://example.com> a <http://example.com/Type> ;
-                    \t<http://example.com/predicate> <http://example.com/value/1> .
+                    <http://example.com/subject> a <http://example.com/Type> ;
+                    \t<http://example.com/value> <http://example.com/value/1> .
                     """.stripIndent()
         }
     }
-}
-
-@Type(EXAMPLE_TYPE)
-class TestBean {
-    @Predicate(EXAMPLE_PREDICATE) private URI value
     
-    public URI getValue() { value }
+    def "check for bean reader invocation"() {
+        setup:
+        def beanReader = Spy(BeanReader)
+        beanMapper.reader = beanReader
+        
+        def source = """\
+                @prefix ex: <http://example.com/> .
+                ex:subject a ex:Type ;
+                    ex:value <http://example.com/value/1> .
+                """
+        
+        when:
+        def bean = beanMapper.read(new StringReader(source), UriValueBean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        1 * beanReader.read(_, UriValueBean, _, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        with (bean) {
+            value == URI.create("http://example.com/value/1")
+        }
+    }
+    
+    def "check for roundtrip consistency"() {
+        setup:
+        def bean = new LiteralValueBean()
+        bean.value = "hello world"
+        def writer = new StringWriter()
+        
+        when:
+        beanMapper.write(writer, bean, "http://example.com/subject", RDFFormat.TURTLE)
+        
+        then:
+        with (writer.toString()) {
+            contains """\
+                    <http://example.com/subject> a <http://example.com/Type> ;
+                    \t<http://example.com/value> "hello world" .
+                    """.stripIndent()
+        }
+        
+        when:
+        def bean2 = beanMapper.read(new StringReader(writer.toString()), LiteralValueBean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        then:
+        with (bean2) {
+            value == "hello world"
+        }
+    }
 }

@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.rio.RDFFormat
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Subject
 import com.github.kburger.rdf4j.beans.annotation.Type
+import com.github.kburger.rdf4j.beans.exception.BeanException
 
 import spock.lang.Ignore
 import spock.lang.Shared
@@ -33,10 +34,10 @@ class BeanWriterSpec extends Specification {
     
     def "test for serialization of an IRI property"() {
         setup:
-        def analysis = analyzer.analyze(TestIriPropertyBean)
+        def analysis = analyzer.analyze(UriValueBean)
         def writer = new StringWriter()
-        def bean = new TestIriPropertyBean()
-        bean.foo = URI.create "http://example.com/foo"
+        def bean = new UriValueBean()
+        bean.value = URI.create "http://example.com/foo"
         
         when:
         beanWriter.write(writer, analysis, bean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
@@ -44,17 +45,17 @@ class BeanWriterSpec extends Specification {
         then:
         with (writer.toString()) {
             contains """\
-                <http://example.com> a <http://example.com/Type> ;
-                \t<http://example.com/hasfoo> <http://example.com/foo> .
+                <http://example.com/subject> a <http://example.com/Type> ;
+                \t<http://example.com/value> <http://example.com/foo> .
                 """.stripIndent()
         }
     }
     
     def "test for serialization of a literal property"() {
         setup:
-        def analysis = analyzer.analyze(TestLiteralPropertyBean)
+        def analysis = analyzer.analyze(LiteralValueBean)
         def writer = new StringWriter()
-        def bean = new TestLiteralPropertyBean()
+        def bean = new LiteralValueBean()
         bean.value = "foo"
         
         when:
@@ -63,7 +64,7 @@ class BeanWriterSpec extends Specification {
         then:
         with (writer.toString()) {
             contains """\
-                <http://example.com> a <http://example.com/Type> ;
+                <http://example.com/subject> a <http://example.com/Type> ;
                 \t<http://example.com/value> "foo" .
                 """.stripIndent()
         }
@@ -82,7 +83,7 @@ class BeanWriterSpec extends Specification {
         then:
         with (writer.toString()) {
             contains """\
-                    <http://example.com> a <http://example.com/Type> ;
+                    <http://example.com/subject> a <http://example.com/Type> ;
                     \t<http://example.com/value> "one" , "two" , "three" .
                     """.stripIndent()
         }
@@ -103,7 +104,7 @@ class BeanWriterSpec extends Specification {
         then:
         with (writer.toString()) {
             contains """\
-                <http://example.com> a <http://example.com/Type> ;
+                <http://example.com/subject> a <http://example.com/Type> ;
                 \t<http://example.com/hasnested> <http://example.com/nested> .
                 """.stripIndent()
             contains """\
@@ -128,11 +129,11 @@ class BeanWriterSpec extends Specification {
         then:
         with (writer.toString()) {
             contains """\
-                    <http://example.com> a <http://example.com/Type> ;
-                    \t<http://example.com/hasnested> <http://example.com#nestedBean> .
+                    <http://example.com/subject> a <http://example.com/Type> ;
+                    \t<http://example.com/hasnested> <http://example.com/subject#nestedBean> .
                     """.stripIndent()
             contains """\
-                    <http://example.com#nestedBean> a <http://example.com/Subtype> ;
+                    <http://example.com/subject#nestedBean> a <http://example.com/Subtype> ;
                     \t<http://example.com/value> "nested" .
                     """.stripIndent()
         }
@@ -140,8 +141,8 @@ class BeanWriterSpec extends Specification {
     
     def "check exception handling when bean class differs from class analysis"() {
         setup:
-        def analysis = analyzer.analyze(TestLiteralPropertyBean)
-        def wrongBean = new TestIriPropertyBean()
+        def analysis = analyzer.analyze(LiteralValueBean)
+        def wrongBean = new UriValueBean()
         
         when:
         beanWriter.write(new StringWriter(), analysis, wrongBean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
@@ -152,8 +153,8 @@ class BeanWriterSpec extends Specification {
     
     def "check for exceptions thrown from predicate getter"() {
         setup:
-        def analysis = analyzer.analyze(TestLiteralPropertyBean)
-        def bean = Mock(TestLiteralPropertyBean)
+        def analysis = analyzer.analyze(LiteralValueBean)
+        def bean = Mock(LiteralValueBean)
         
         when:
         beanWriter.write(new StringWriter(), analysis, bean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
@@ -167,7 +168,7 @@ class BeanWriterSpec extends Specification {
     def "check exception handling when nested bean class differs from class analysis"() {
         def analysis = analyzer.analyze(ParentTestBean)
         def parent = new ParentTestBean()
-        parent.nestedBean = new TestLiteralPropertyBean()
+        parent.nestedBean = new LiteralValueBean()
         
         when:
         beanWriter.write(new StringWriter(), analysis, parent, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
@@ -188,60 +189,45 @@ class BeanWriterSpec extends Specification {
         
         then:
         nested.getSubject() >> { throw new RuntimeException() }
-        thrown(IllegalStateException)
+        thrown BeanException
+    }
+    
+    def "check exception handling when a nested field is null"() {
+        setup:
+        def analysis = analyzer.analyze(ParentTestBean)
+        def bean = new ParentTestBean()
+        
+        when:
+        beanWriter.write(new StringWriter(), analysis, bean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        notThrown NullPointerException
     }
 }
 
 @Type(EXAMPLE_TYPE)
-class TestLiteralPropertyBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value;
-    
-    public String getValue() { value }
-}
-
-@Type(EXAMPLE_TYPE)
-class TestIriPropertyBean {
-    @Predicate("http://example.com/hasfoo") private URI foo
-    
-    public String getFoo() { foo }
-}
-
-@Type(EXAMPLE_TYPE)
 class TestPropertyListBean {
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private List<String> values
-    
-    public List<String> getValues() { values }
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) List<String> values
 }
 
 @Type(EXAMPLE_TYPE)
 class ParentTestBean {
-    @Predicate(NESTED_PREDICATE) private NestedTestBean nestedBean
-    
-    public NestedTestBean getNestedBean() { nestedBean }
+    @Predicate(NESTED_PREDICATE) NestedTestBean nestedBean
 }
 
 @Type(EXAMPLE_SUBTYPE)
 class NestedTestBean {
-    @Subject private URI subject
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
-    
-    public URI getSubject() { subject }
-    
-    public String getValue() { value }
+    @Subject URI subject
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) String value
 }
 
 @Type(EXAMPLE_TYPE)
 class RelativeSubjectParentBean {
-    @Predicate(NESTED_PREDICATE) private RelativeSubjectNestedBean nestedBean
-    
-    public RelativeSubjectNestedBean getNestedBean() { nestedBean }
+    @Predicate(NESTED_PREDICATE) RelativeSubjectNestedBean nestedBean
 }
 
 @Type(EXAMPLE_SUBTYPE)
 class RelativeSubjectNestedBean {
-    @Subject(relative = true) private String subject
-    @Predicate(value = VALUE_PREDICATE, isLiteral = true) private String value
-    
-    public String getSubject() { subject }
-    public String getValue() { value }
+    @Subject(relative = true) String subject
+    @Predicate(value = VALUE_PREDICATE, isLiteral = true) String value
 }

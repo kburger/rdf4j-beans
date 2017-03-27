@@ -47,7 +47,7 @@ import java.lang.annotation.Target;
  *    }
  * </pre>
  * 
- * Third, a property getter can be annotated. As with property level annotations, a single
+ * <p>Third, a property getter can be annotated. As with property level annotations, a single
  * annotation on method level can specify a different bean type for each bean instance. For example:
  * <pre>
  *    public class MyBeanClass {
