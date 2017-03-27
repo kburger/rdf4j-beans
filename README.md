@@ -14,7 +14,7 @@ Add the `rdf4j-beans` dependency in your POM:
 <dependency>
     <groupId>com.github.kburger</groupId>
     <artifactId>rdf4j-beans</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ assert bean.getTitle().equals("Hello world!");
 
 # changelog
 0.3.0
-- ...
+- Support for inherited properties.
 
 0.2.0
 - Support for bean deserialization.
