@@ -191,6 +191,18 @@ class BeanWriterSpec extends Specification {
         nested.getSubject() >> { throw new RuntimeException() }
         thrown BeanException
     }
+    
+    def "check exception handling when a nested field is null"() {
+        setup:
+        def analysis = analyzer.analyze(ParentTestBean)
+        def bean = new ParentTestBean()
+        
+        when:
+        beanWriter.write(new StringWriter(), analysis, bean, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        
+        then:
+        notThrown NullPointerException
+    }
 }
 
 @Type(EXAMPLE_TYPE)
