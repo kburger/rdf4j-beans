@@ -67,7 +67,11 @@ public class BeanAnalyzer {
             throw new BeanException("Failed to get bean info through introspection", e);
         }
         
-        final ClassAnalysis classAnalysis = new ClassAnalysis();
+        ClassAnalysis classAnalysis = new ClassAnalysis();
+        
+        if (!Object.class.equals(clazz.getSuperclass())) {
+            classAnalysis = analyze(clazz.getSuperclass());
+        }
         
         if (clazz.isAnnotationPresent(Type.class)) { 
             final PropertyAnalysis<Type> typeAnalysis =

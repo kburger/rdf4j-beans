@@ -19,6 +19,7 @@ import static com.github.kburger.rdf4j.beans.Constants.*
 
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Type
+import com.github.kburger.rdf4j.beans.exception.BeanException
 
 import spock.lang.Specification
 
@@ -118,6 +119,29 @@ class BeanAnalyzerSpec extends Specification {
             predicates[0].annotation.value() == "nested-foo"
         }
     }
+    
+    def "check for property analysis of parent class in child class"() {
+        when:
+        def analysis = beanAnalyzer.analyze(ChildClass)
+        
+        then:
+        with (analysis) {
+            predicates.size() == 2
+        }
+    }
+    
+    def "check for property analysis of class properties and inherited properties"() {
+        when:
+        def analysis = beanAnalyzer.analyze(ChildClass)
+        
+        then:
+        with (analysis.predicates[0]) {
+            annotation.value() == "parent-foo"
+        }
+        with (analysis.predicates[1]) {
+            annotation.value() == "child-bar"
+        }
+    }
 }
 
 class PropertyTestClass {
@@ -162,4 +186,12 @@ class NestedClass {
 
 class WithNestedTestClass {
     @Predicate("parent-foo") NestedClass parentfoo
+}
+
+class ParentClass {
+    @Predicate("parent-foo") String foo
+}
+
+class ChildClass extends ParentClass {
+    @Predicate("child-bar") String bar
 }
