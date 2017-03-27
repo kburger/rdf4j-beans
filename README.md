@@ -58,6 +58,7 @@ assert bean.getTitle().equals("Hello world!");
 # changelog
 0.2.0
 - Support for bean deserialization.
+- Fix for handling property null values. 
 
 0.1.0
 - Initial release.
