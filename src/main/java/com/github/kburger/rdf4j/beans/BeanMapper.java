@@ -20,6 +20,8 @@ import java.io.Writer;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
 
+import com.github.kburger.rdf4j.beans.exception.BeanException;
+
 /**
  * Bean mapper that ties the {@link BeanAnalyzer}, {@link BeanWriter}, and {@link BeanReader}
  * classes together. This class is the main usage entry point. Behaviour can be modified by setting

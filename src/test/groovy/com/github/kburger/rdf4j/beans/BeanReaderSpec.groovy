@@ -53,24 +53,26 @@ class BeanReaderSpec extends Specification {
         def source = """\
                 <foo> a :bar .
                 """
-        def analysis = analyzer.analyze(Object)
+        def analysis = analyzer.analyze(String)
                 
         when:
-        beanReader.read(new StringReader(source), Object, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(source), String, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
-        thrown RuntimeException
+        thrown BeanException
     }
     
     def "test for exception handling on class instance creation"() {
         setup:
-        def analysis = analyzer.analyze(Object)
+        def analysisClass = String
+        def wrongBeanClass = List
+        def analysis = analyzer.analyze(analysisClass)
         
         when:
-        beanReader.read(new StringReader(""), List, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
+        beanReader.read(new StringReader(""), wrongBeanClass, analysis, EXAMPLE_SUBJECT, RDFFormat.TURTLE)
         
         then:
-        thrown RuntimeException
+        thrown BeanException
     }
     
     def "test for exception handling of setter invocation"() {
