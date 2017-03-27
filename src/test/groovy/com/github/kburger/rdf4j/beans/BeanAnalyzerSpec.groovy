@@ -17,6 +17,9 @@ package com.github.kburger.rdf4j.beans
 
 import static com.github.kburger.rdf4j.beans.Constants.*
 
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Type
 import com.github.kburger.rdf4j.beans.exception.BeanException
@@ -25,6 +28,31 @@ import spock.lang.Specification
 
 class BeanAnalyzerSpec extends Specification {
     def beanAnalyzer = new BeanAnalyzer()
+    
+    // This test is a pure hack to make Jacoco cover all of a java synchronized block. The only
+    // purpose of this test is to gain about one percent on test coverage. 
+    def "make sure synchronized blocks are covered by jacoco"() {
+        setup:
+        def mockCache = Mock(Map)
+        
+        //hack, see http://stackoverflow.com/q/27552600 for the details
+        def field = BeanAnalyzer.class.getDeclaredField "cache"
+        field.setAccessible true
+        
+        def modifiers = Field.class.getDeclaredField "modifiers"
+        modifiers.setAccessible true
+        modifiers.setInt(field, field.modifiers & ~Modifier.FINAL)
+        
+        field.set(beanAnalyzer, mockCache)
+        // end of hack
+        
+        when:
+        mockCache.put(*_) >> { throw new IllegalStateException() }
+        beanAnalyzer.analyze(PropertyTestClass)
+        
+        then:
+        thrown IllegalStateException
+    }
     
     def "check for exception handling of invalid classes"() {
         when:
