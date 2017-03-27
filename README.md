@@ -1,8 +1,8 @@
 # rdf4j-beans
--[![Build Status](https://travis-ci.org/kburger/rdf4j-beans.svg?branch=develop)](https://travis-ci.org/kburger/rdf4j-beans)
- -[![Coverage Status](https://coveralls.io/repos/github/kburger/rdf4j-beans/badge.svg?branch=develop)](https://coveralls.io/github/kburger/rdf4j-beans?branch=develop)
- -[![Codacy Badge](https://api.codacy.com/project/badge/Grade/05b1b8037272416a8d925ec2ce160d54)](https://www.codacy.com/app/burger/rdf4j-beans?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kburger/rdf4j-beans&amp;utm_campaign=Badge_Grade)
- -[![Dependency Status](https://www.versioneye.com/user/projects/58c674c662d60200434c7ef9/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58c674c662d60200434c7ef9)
+[![Build Status](https://travis-ci.org/kburger/rdf4j-beans.svg?branch=develop)](https://travis-ci.org/kburger/rdf4j-beans)
+[![Coverage Status](https://coveralls.io/repos/github/kburger/rdf4j-beans/badge.svg?branch=develop)](https://coveralls.io/github/kburger/rdf4j-beans?branch=develop)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/05b1b8037272416a8d925ec2ce160d54)](https://www.codacy.com/app/burger/rdf4j-beans?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kburger/rdf4j-beans&amp;utm_campaign=Badge_Grade)
+[![Dependency Status](https://www.versioneye.com/user/projects/58c674c662d60200434c7ef9/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58c674c662d60200434c7ef9)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.kburger/rdf4j-beans.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.kburger%22%20a%3A%22rdf4j-beans%22)
 [![Javadocs](https://javadoc.io/badge/com.github.kburger/rdf4j-beans.svg)](https://javadoc.io/doc/com.github.kburger/rdf4j-beans)
 
