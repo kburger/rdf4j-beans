@@ -59,7 +59,7 @@ import com.github.kburger.rdf4j.beans.exception.BeanException;
  * <p>Given the previous RDF output, it can be converted back into a Java bean using the following
  * snippet:
  * <pre>
- *    StringExampleBean bean = mapper.read(new StringReader(content), StringExampleBean.class, RDFFormat.TURTLE);
+ *    StringExampleBean bean = mapper.read(new StringReader(content), StringExampleBean.class, "http://example.com/subject", RDFFormat.TURTLE);
  * </pre>
  */
 public class BeanMapper {
