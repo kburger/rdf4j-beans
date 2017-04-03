@@ -44,9 +44,16 @@ public class BeanAnalyzer {
     
     /** Cached analysis. */
     private final Map<Class<?>, ClassAnalysis> cache;
+    /** Mix-in specific analyzer. */
+    private final MixInAnalyzer mixInAnalyzer;
     
     public BeanAnalyzer() {
         cache = new HashMap<>();
+        mixInAnalyzer = new MixInAnalyzer();
+    }
+    
+    public void registerMixIn(Class<?> target, Class<?> mixIn) {
+        mixInAnalyzer.registerMixIn(target, mixIn);
     }
     
     /**
@@ -74,6 +81,8 @@ public class BeanAnalyzer {
         if (!Object.class.equals(clazz.getSuperclass())) {
             classAnalysis = analyze(clazz.getSuperclass());
         }
+        
+        mixInAnalyzer.analyzeMixIn(clazz, classAnalysis);
         
         if (clazz.isAnnotationPresent(Type.class)) { 
             final PropertyAnalysis<Type> typeAnalysis =
