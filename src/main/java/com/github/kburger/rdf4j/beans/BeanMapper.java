@@ -67,8 +67,16 @@ public class BeanMapper {
     private BeanWriter beanWriter = new BeanWriter();
     private BeanReader beanReader = new BeanReader();
     
+    public BeanAnalyzer getAnalyzer() {
+        return analyzer;
+    }
+    
     public void setWriter(final BeanWriter writer) {
         this.beanWriter = writer;
+    }
+
+    public BeanReader getBeanReader() {
+        return beanReader;
     }
     
     public void setReader(final BeanReader reader) {

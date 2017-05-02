@@ -38,7 +38,8 @@ public class MyBean {
 Invoke the mapper:
 ```java
 BeanMapper mapper = new BeanMapper();
-mapper.write(new OutputStreamWriter(System.out), new MyBean("example"), "http://example.com/subject", RDFFormat.TURTLE);
+mapper.write(new OutputStreamWriter(System.out), new MyBean("example"),
+        "http://example.com/subject", RDFFormat.TURTLE);
 ```
 
 Or read from source:
@@ -51,11 +52,55 @@ ex:subject a ex:Type ;
 ```
 
 ```java
-MyBean bean = mapper.read(new StringReader(content), MyBean.class, "http://example.com/subject", RDFFormat.TURTLE);
+MyBean bean = mapper.read(new StringReader(content), MyBean.class,
+        "http://example.com/subject", RDFFormat.TURTLE);
 assert bean.getTitle().equals("Hello world!");
 ```
 
+# mix-ins
+Mix-in annotations allow you to enrich non-annotated classes with rdf4j-beans annotations. 
+
+Given the following example class:
+```java
+public class ExampleBean {
+    private String value;
+    
+    public ExampleBean(String value) {
+        this.value = value;
+    }
+    
+    public String getValue() {
+        return value;
+    }
+}
+```
+
+A `@Predicate` annotation can be mixed in using an interface:
+```java
+public interface MixIn {
+    @Predicate(value = "http://example.com/value", isLiteral = true)
+    String getValue();
+}
+```
+
+The effect applied using the following snippet:
+```java
+BeanMapper mapper = new BeanMapper();
+mapper.getAnalyzer().registerMixIn(ExampleBean.class, MixIn.class);
+
+mapper.write(new OutputStreamWriter(System.out), new ExampleBean("value"),
+    "http://example.com/", RDFFormat.TURTLE);
+```
+
+The snippet above will produce this result:
+```
+<http://example.com/> <http://example.com/value> "value" .
+```
+
 # changelog
+0.4.0
+- Support for mix-ins.
+
 0.3.0
 - Support for inherited properties.
 

@@ -94,4 +94,10 @@ class BeanMapperSpec extends Specification {
             value == "hello world"
         }
     }
+    
+    def "check for default writer and analyzer instances"() {
+        expect:
+        beanMapper.analyzer
+        beanMapper.beanReader
+    }
 }
