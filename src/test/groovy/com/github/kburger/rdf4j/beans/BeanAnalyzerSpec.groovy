@@ -178,6 +178,17 @@ class BeanAnalyzerSpec extends Specification {
             annotation.value() == "child-bar"
         }
     }
+    
+    def "check for mixin effect in analysis"() {
+        when:
+        beanAnalyzer.registerMixIn(NonAnnotatedClass, MixIn)
+        def analysis = beanAnalyzer.analyze(NonAnnotatedClass)
+        
+        then:
+        with (analysis) {
+            predicates.size() == 1
+        }
+    }
 }
 
 class PropertyTestClass {
@@ -230,4 +241,11 @@ class ParentClass {
 
 class ChildClass extends ParentClass {
     @Predicate("child-bar") String bar
+}
+
+class NonAnnotatedClass {
+    String value
+}
+interface MixIn {
+    @Predicate("hasValue") String getValue();
 }

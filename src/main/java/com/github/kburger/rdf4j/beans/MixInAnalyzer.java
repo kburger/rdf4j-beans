@@ -1,3 +1,18 @@
+/**
+ * Copyright 2017 https://github.com/kburger
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.kburger.rdf4j.beans;
 
 import java.beans.Introspector;
@@ -16,6 +31,37 @@ import com.github.kburger.rdf4j.beans.annotation.Type;
 /**
  * Provides Jackson-like mix-in annotation functionality for rdf4j-beans.
  * 
+ * <p>Mix-ins are registered against a <i>target</i> class. The annotations provided by the mix-in
+ * will be applied to the target class.
+ * 
+ * <p>Mix-ins can be implemented through interfaces or classes. An interface mix-in will mimic a
+ * getter method signature. The following example illustrates the usage of a mix-in interface.
+ * <pre>
+ * class Target {
+ *     private String value;
+ * 
+ *     public String getValue() {
+ *         return value;
+ *     }
+ * 
+ *     public void setValue(String value) {
+ *         this.value = value;
+ *     }
+ * }
+ * 
+ * // the mixin class will provide an annotation on the value property of the Target class
+ * interface MixIn {
+ *     &#64;Predicate("http://purl.org/dc/terms/title")
+ *     String getValue();
+ * }
+ * 
+ * // register the mixin with the analyzer
+ * mixInAnalyzer.registerMixIn(Target.class, MixIn.class);
+ * // analyze the target class, now the mixin annotation is added to the analysis result
+ * mixInAnalyzer.analyzeMixIn(Target.class, new ClassAnalysis());
+ * </pre>
+ * 
+ * <p>
  * @see <a href="https://github.com/FasterXML/jackson-docs/wiki/JacksonMixInAnnotations">Jackson Feature: Mix-in Annotations.</a>
  */
 public class MixInAnalyzer {
@@ -52,6 +98,7 @@ public class MixInAnalyzer {
      */
     public void analyzeMixIn(final Class<?> target, final ClassAnalysis classAnalysis) {
         if (!mixIns.containsKey(target)) {
+            logger.debug("No mix-in class found for {}", target);
             return;
         }
         
@@ -86,9 +133,8 @@ public class MixInAnalyzer {
         } else if (methodName.startsWith(PREFIX_IS)) {
             rawPropertyName = methodName.substring(PREFIX_IS.length());
         } else {
-            logger.warn("Method {} does not use JavaBean convention; skipping", methodName);
-            // FIXME this could be used to mix-in annotations on non-javabean classes.
-            return;
+            logger.debug("Method {} does not use JavaBean convention", methodName);
+            rawPropertyName = methodName;
         }
         
         final Method targetMethod;
@@ -121,8 +167,8 @@ public class MixInAnalyzer {
      * @param getterMethod setter method counterpart, used to derrive the correct setter signature.
      * @return bean property setter method if present; {@link Optional#empty()} if not present.
      */
-    private Optional<Method> getSetterMethod(final Class<?> target,
-            final String rawPropertyName, final Method getterMethod) {
+    private Optional<Method> getSetterMethod(final Class<?> target, final String rawPropertyName,
+            final Method getterMethod) {
         final String setterMethodName = PREFIX_SET + rawPropertyName;
         
         final Method setter;

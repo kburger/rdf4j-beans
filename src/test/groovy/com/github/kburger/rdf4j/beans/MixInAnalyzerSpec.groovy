@@ -1,9 +1,25 @@
+/**
+ * Copyright 2017 https://github.com/kburger
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.kburger.rdf4j.beans
 
 import static com.github.kburger.rdf4j.beans.Constants.*
 
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Type
+import com.google.common.eventbus.AnnotatedSubscriberFinder
 
 import spock.lang.Specification
 
@@ -32,11 +48,13 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(TargetBean, analysis)
         
         then:
+        def metaMethods = TargetBean.metaClass.methods
         with (analysis) {
-//            type.annotation.value() == EXAMPLE_TYPE
             predicates.size() == 2
             predicates[0].annotation.value() == "hasValue"
             predicates[1].annotation.value() == "hasFlag"
+            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
+            predicates[1].getter == metaMethods.find { it.name == "isFlag" }.cachedMethod 
         }
     }
     
@@ -49,10 +67,13 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(TargetBean, analysis)
         
         then:
+        def metaMethods = TargetBean.metaClass.methods
         with (analysis) {
             predicates.size() == 2
             predicates[0].annotation.value() == "hasValue"
             predicates[1].annotation.value() == "hasFlag"
+            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
+            predicates[1].getter == metaMethods.find { it.name == "isFlag" }.cachedMethod
         }
     }
     
@@ -65,10 +86,14 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(TargetBean, analysis)
         
         then:
+        def metaMethods = TargetBean.metaClass.methods
         with (analysis) {
             predicates.size() == 2
             predicates[0].annotation.value() == "hasValue"
             predicates[1].annotation.value() == "hasFlag"
+            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
+            predicates[1].getter == metaMethods.find { it.name == "isFlag" }.cachedMethod
+            
         }
     }
     
@@ -95,13 +120,16 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(GetterAndSetterBean, analysis)
         
         then:
+        def metaMethods = GetterAndSetterBean.metaClass.methods
         with (analysis) {
             predicates.size() == 1
             predicates[0].annotation.value() == "hasValue"
+            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
+            predicates[0].setter == metaMethods.find { it.name == "setValue" }.cachedMethod
         }
     }
     
-    def "what happens to methods not following javabean convention?"() {
+    def "mixin for non-javabean convention target"() {
         setup:
         mixinAnalyzer.registerMixIn(NonConventionClass, NonConventionMixIn)
         def analysis = new ClassAnalysis()
@@ -110,8 +138,11 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(NonConventionClass, analysis)
         
         then:
+        def metaMethods = NonConventionClass.metaClass.methods
         with (analysis) {
-            predicates.size() == 0
+            predicates.size() == 1
+            predicates[0].annotation.value() == "hasValue"
+            predicates[0].getter == metaMethods.find { it.name == "value" }.cachedMethod
         }
     }
     
