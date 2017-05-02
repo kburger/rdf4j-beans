@@ -17,6 +17,8 @@ package com.github.kburger.rdf4j.beans
 
 import static com.github.kburger.rdf4j.beans.Constants.*
 
+import java.lang.annotation.Annotation
+
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Type
 import com.google.common.eventbus.AnnotatedSubscriberFinder
@@ -48,13 +50,10 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(TargetBean, analysis)
         
         then:
-        def metaMethods = TargetBean.metaClass.methods
         with (analysis) {
             predicates.size() == 2
-            predicates[0].annotation.value() == "hasValue"
-            predicates[1].annotation.value() == "hasFlag"
-            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
-            predicates[1].getter == metaMethods.find { it.name == "isFlag" }.cachedMethod 
+            checkPredicate(predicates, "hasValue", TargetBean, "getValue")
+            checkPredicate(predicates, "hasFlag", TargetBean, "isFlag") 
         }
     }
     
@@ -67,13 +66,10 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(TargetBean, analysis)
         
         then:
-        def metaMethods = TargetBean.metaClass.methods
         with (analysis) {
             predicates.size() == 2
-            predicates[0].annotation.value() == "hasValue"
-            predicates[1].annotation.value() == "hasFlag"
-            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
-            predicates[1].getter == metaMethods.find { it.name == "isFlag" }.cachedMethod
+            checkPredicate(predicates, "hasValue", TargetBean, "getValue")
+            checkPredicate(predicates, "hasFlag", TargetBean, "isFlag")
         }
     }
     
@@ -86,13 +82,10 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(TargetBean, analysis)
         
         then:
-        def metaMethods = TargetBean.metaClass.methods
         with (analysis) {
             predicates.size() == 2
-            predicates[0].annotation.value() == "hasValue"
-            predicates[1].annotation.value() == "hasFlag"
-            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
-            predicates[1].getter == metaMethods.find { it.name == "isFlag" }.cachedMethod
+            checkPredicate(predicates, "hasValue", TargetBean, "getValue")
+            checkPredicate(predicates, "hasFlag", TargetBean, "isFlag")
             
         }
     }
@@ -123,8 +116,7 @@ class MixInAnalyzerSpec extends Specification {
         def metaMethods = GetterAndSetterBean.metaClass.methods
         with (analysis) {
             predicates.size() == 1
-            predicates[0].annotation.value() == "hasValue"
-            predicates[0].getter == metaMethods.find { it.name == "getValue" }.cachedMethod
+            checkPredicate(predicates, "hasValue", GetterAndSetterBean, "getValue")
             predicates[0].setter == metaMethods.find { it.name == "setValue" }.cachedMethod
         }
     }
@@ -138,11 +130,9 @@ class MixInAnalyzerSpec extends Specification {
         mixinAnalyzer.analyzeMixIn(NonConventionClass, analysis)
         
         then:
-        def metaMethods = NonConventionClass.metaClass.methods
         with (analysis) {
             predicates.size() == 1
-            predicates[0].annotation.value() == "hasValue"
-            predicates[0].getter == metaMethods.find { it.name == "value" }.cachedMethod
+            checkPredicate(predicates, "hasValue", NonConventionClass, "value")
         }
     }
     
@@ -158,6 +148,11 @@ class MixInAnalyzerSpec extends Specification {
         with (analysis) {
             predicates.size() == 0
         }
+    }
+    
+    // convenience method for analysis predicate checking
+    def checkPredicate(predicates, annotation, target, methodName) {
+        predicates.find { it.annotation.value() == annotation }.getter == target.metaClass.methods.find { it.name == methodName }.cachedMethod
     }
 }
 
