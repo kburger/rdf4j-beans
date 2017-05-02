@@ -63,7 +63,7 @@ public class BeanAnalyzer {
      */
     public ClassAnalysis analyze(final Class<?> clazz) {
         if (cache.containsKey(clazz)) {
-            logger.debug("Class {} was found in cache, did not analyze again", clazz);
+            logger.debug("Target {} was found in cache, did not analyze again", clazz);
             return cache.get(clazz);
         }
         
@@ -111,11 +111,16 @@ public class BeanAnalyzer {
      */
     private void analyzeProperty(final Class<?> clazz, final PropertyDescriptor property,
             final ClassAnalysis classAnalysis) {
+        if ("class".equals(property.getName())) {
+            logger.debug("Skipping property 'class' for {}", clazz);
+            return;
+        }
+        
         final Field field;
         try {
             field = clazz.getDeclaredField(property.getName());
         } catch (NoSuchFieldException e) {
-            logger.warn("Could not get property {} on class {}: {}",
+            logger.warn("Could not get property {} for {}: {}",
                     property.getName(), clazz, e.getMessage());
             return;
         }

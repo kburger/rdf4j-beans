@@ -79,8 +79,10 @@ class BeanAnalyzerSpec extends Specification {
         def analysis = beanAnalyzer.analyze(PropertyTestClass)
         
         then:
-        analysis.predicates.size() == 1
-        analysis.predicates[0].annotation.value() == EXAMPLE_PREDICATE
+        with (analysis) {
+            predicates.size() == 1
+            predicates[0].annotation.value() == EXAMPLE_PREDICATE
+        }
     }
     
     def "check for annotated property from method annotation"() {
@@ -88,8 +90,10 @@ class BeanAnalyzerSpec extends Specification {
         def analysis = beanAnalyzer.analyze(MethodTestClass)
         
         then:
-        analysis.predicates.size() == 1
-        analysis.predicates[0].annotation.value() == EXAMPLE_PREDICATE
+        with (analysis) {
+            predicates.size() == 1
+            predicates[0].annotation.value() == EXAMPLE_PREDICATE
+        }
     }
     
     def "check for annotated properties from both field and method annotation"() {
@@ -97,9 +101,11 @@ class BeanAnalyzerSpec extends Specification {
         def analysis = beanAnalyzer.analyze(PropertyAndMethodTestClass)
         
         then:
-        analysis.predicates.size() == 2
-        analysis.predicates[0].annotation.value() == EXAMPLE_PREDICATE
-        analysis.predicates[1].annotation.value() == "test2"
+        with (analysis) {
+            predicates.size() == 2
+            predicates[0].annotation.value() == EXAMPLE_PREDICATE
+            predicates[1].annotation.value() == "test2"
+        }
     }
     
     def "check for class level type annotation"() {
@@ -107,8 +113,10 @@ class BeanAnalyzerSpec extends Specification {
         def analysis = beanAnalyzer.analyze(ClassTypeTestClass)
         
         then:
-        analysis.type
-        analysis.type.annotation.value() == EXAMPLE_TYPE
+        with (analysis) {
+            type
+            type.annotation.value() == EXAMPLE_TYPE
+        }
     }
     
     def "check for property level type annotation"() {
