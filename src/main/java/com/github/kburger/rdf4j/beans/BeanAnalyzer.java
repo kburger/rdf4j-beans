@@ -52,7 +52,7 @@ public class BeanAnalyzer {
         mixInAnalyzer = new MixInAnalyzer();
     }
     
-    public void registerMixIn(Class<?> target, Class<?> mixIn) {
+    public void registerMixIn(final Class<?> target, final Class<?> mixIn) {
         mixInAnalyzer.registerMixIn(target, mixIn);
     }
     

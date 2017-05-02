@@ -61,7 +61,6 @@ import com.github.kburger.rdf4j.beans.annotation.Type;
  * mixInAnalyzer.analyzeMixIn(Target.class, new ClassAnalysis());
  * </pre>
  * 
- * <p>
  * @see <a href="https://github.com/FasterXML/jackson-docs/wiki/JacksonMixInAnnotations">Jackson Feature: Mix-in Annotations.</a>
  */
 public class MixInAnalyzer {
