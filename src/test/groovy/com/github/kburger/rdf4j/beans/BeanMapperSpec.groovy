@@ -19,9 +19,6 @@ import static com.github.kburger.rdf4j.beans.Constants.*
 
 import org.eclipse.rdf4j.rio.RDFFormat
 
-import com.github.kburger.rdf4j.beans.annotation.Predicate
-import com.github.kburger.rdf4j.beans.annotation.Type
-
 import spock.lang.Specification
 
 class BeanMapperSpec extends Specification {

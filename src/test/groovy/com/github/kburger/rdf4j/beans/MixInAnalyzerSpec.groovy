@@ -17,11 +17,8 @@ package com.github.kburger.rdf4j.beans
 
 import static com.github.kburger.rdf4j.beans.Constants.*
 
-import java.lang.annotation.Annotation
-
 import com.github.kburger.rdf4j.beans.annotation.Predicate
 import com.github.kburger.rdf4j.beans.annotation.Type
-import com.google.common.eventbus.AnnotatedSubscriberFinder
 
 import spock.lang.Specification
 
