@@ -20,6 +20,8 @@ package com.github.kburger.rdf4j.beans.exception;
  * recover.
  */
 public class BeanException extends RuntimeException {
+    private static final long serialVersionUID = 4474682682771363960L;
+
     public BeanException(final String message) {
         super(message);
     }

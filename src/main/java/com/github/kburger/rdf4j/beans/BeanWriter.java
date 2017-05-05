@@ -128,7 +128,7 @@ public class BeanWriter {
                 subjectValue = nested.getSubject().getGetter().invoke(content);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 // throw stuff if strict? ignore if lenient?
-                logger.warn("Could not invoke subject getter on {}: {}", nested, e);
+                logger.warn("Could not invoke subject getter on {}: {}", nested, e.getMessage());
                 throw new BeanException("Failed to invoke bean property getter method", e);
             }
             
